@@ -10,6 +10,7 @@ add_library(${PROJECT_NAME})
 
 target_sources(${PROJECT_NAME}
     PRIVATE
+    pipeline.cpp
     window.cpp
 )
 
