@@ -1,6 +1,7 @@
 #ifndef SRC_FIRST_APP_FIRST_APP
 #define SRC_FIRST_APP_FIRST_APP
 
+#include <device.hpp>
 #include <pipeline.hpp>
 #include <window.hpp>
 
@@ -10,11 +11,14 @@ class FirstApp
     static constexpr int WIDTH = 800;
     static constexpr int HEIGHT = 600;
 
+    FirstApp();
     void run();
 
   private:
-    Pipeline pipeline{"simple_shader.vert.spv", "simple_shader.frag.spv"};
+    void createPipeline();
+
     Window window_{WIDTH, HEIGHT, "Hello Vulkan!"};
+    Device device_{window_};
 };
 
 #endif /* SRC_FIRST_APP_FIRST_APP */

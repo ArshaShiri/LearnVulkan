@@ -55,7 +55,7 @@ if [ $reconfigure = true ] || [ "$clean_build" = true ]; then
     conan install . --build=missing --settings:host=build_type=$build_type
 fi
 
-if [ $clean_build = true ]; then
+if [ $reconfigure = true ] || [ $clean_build = true ]; then
     echo "Clean build"
     cmake -S . -DCMAKE_TOOLCHAIN_FILE=$build_path/conan_toolchain.cmake -B $build_path -DCMAKE_BUILD_TYPE=$build_type
 fi
