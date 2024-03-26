@@ -12,6 +12,7 @@ target_sources(${PROJECT_NAME}
     PRIVATE
     device.cpp
     pipeline.cpp
+    swap_chain.cpp
     window.cpp
 )
 

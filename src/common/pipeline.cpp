@@ -100,6 +100,16 @@ void Pipeline::defaultPipelineConfigInfo(PipelineConfigInfo &configInfo, uint32_
     configInfo.colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO; // Optional
     configInfo.colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD; // Optional
 
+    configInfo.colorBlendInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;
+    configInfo.colorBlendInfo.logicOpEnable = VK_FALSE;
+    configInfo.colorBlendInfo.logicOp = VK_LOGIC_OP_COPY; // Optional
+    configInfo.colorBlendInfo.attachmentCount = 1;
+    configInfo.colorBlendInfo.pAttachments = &configInfo.colorBlendAttachment;
+    configInfo.colorBlendInfo.blendConstants[0] = 0.0f; // Optional
+    configInfo.colorBlendInfo.blendConstants[1] = 0.0f; // Optional
+    configInfo.colorBlendInfo.blendConstants[2] = 0.0f; // Optional
+    configInfo.colorBlendInfo.blendConstants[3] = 0.0f; // Optional
+
     configInfo.depthStencilInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
     configInfo.depthStencilInfo.depthTestEnable = VK_TRUE;
     configInfo.depthStencilInfo.depthWriteEnable = VK_TRUE;
@@ -110,6 +120,11 @@ void Pipeline::defaultPipelineConfigInfo(PipelineConfigInfo &configInfo, uint32_
     configInfo.depthStencilInfo.stencilTestEnable = VK_FALSE;
     configInfo.depthStencilInfo.front = {}; // Optional
     configInfo.depthStencilInfo.back = {}; // Optional
+}
+
+void Pipeline::bind(VkCommandBuffer commandBuffer)
+{
+    vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline_);
 }
 
 void Pipeline::createGraphicsPipeline(const std::string &vertFilepath,

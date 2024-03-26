@@ -12,15 +12,15 @@ struct PipelineConfigInfo
     PipelineConfigInfo(const PipelineConfigInfo &) = delete;
     PipelineConfigInfo &operator=(const PipelineConfigInfo &) = delete;
 
-    VkViewport viewport;
-    VkRect2D scissor;
-    VkPipelineViewportStateCreateInfo viewportInfo;
-    VkPipelineInputAssemblyStateCreateInfo inputAssemblyInfo;
-    VkPipelineRasterizationStateCreateInfo rasterizationInfo;
-    VkPipelineMultisampleStateCreateInfo multisampleInfo;
-    VkPipelineColorBlendAttachmentState colorBlendAttachment;
-    VkPipelineColorBlendStateCreateInfo colorBlendInfo;
-    VkPipelineDepthStencilStateCreateInfo depthStencilInfo;
+    VkViewport viewport{};
+    VkRect2D scissor{};
+    VkPipelineViewportStateCreateInfo viewportInfo{};
+    VkPipelineInputAssemblyStateCreateInfo inputAssemblyInfo{};
+    VkPipelineRasterizationStateCreateInfo rasterizationInfo{};
+    VkPipelineMultisampleStateCreateInfo multisampleInfo{};
+    VkPipelineColorBlendAttachmentState colorBlendAttachment{};
+    VkPipelineColorBlendStateCreateInfo colorBlendInfo{};
+    VkPipelineDepthStencilStateCreateInfo depthStencilInfo{};
     VkPipelineLayout pipelineLayout = nullptr;
     VkRenderPass renderPass = nullptr;
     uint32_t subpass = 0;
@@ -39,6 +39,8 @@ class Pipeline
 
     static void defaultPipelineConfigInfo(PipelineConfigInfo &configInfo, uint32_t width, uint32_t height);
 
+    void bind(VkCommandBuffer commandBuffer);
+
     ~Pipeline();
 
   private:
@@ -49,9 +51,9 @@ class Pipeline
     void createShaderModule(const std::vector<char> &code, VkShaderModule *shaderModule);
 
     Device &device_;
-    VkPipeline graphicsPipeline_;
-    VkShaderModule vertexShaderModule_;
-    VkShaderModule fragmentShaderModule_;
+    VkPipeline graphicsPipeline_{};
+    VkShaderModule vertexShaderModule_{};
+    VkShaderModule fragmentShaderModule_{};
 };
 
 #endif /* SRC_COMMON_INCLUDE_PIPELINE */
