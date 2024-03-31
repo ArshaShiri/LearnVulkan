@@ -1,7 +1,46 @@
 #include <array>
 #include <stdexcept>
 
+#include <glm/glm.hpp>
+
 #include "first_app.hpp"
+
+namespace
+{
+void doCreateSierpinski(const glm::vec2 &top,
+                        const glm::vec2 &left,
+                        const glm::vec2 &right,
+                        std::vector<Model::Vertex> &vertices,
+                        std::size_t depth)
+{
+    if (depth <= 0)
+    {
+        vertices.push_back({top});
+        vertices.push_back({left});
+        vertices.push_back({right});
+    }
+    else
+    {
+        const auto topLeft = 0.5f * (left + top);
+        const auto topRight = 0.5f * (right + top);
+        const auto leftRight = 0.5f * (left + right);
+
+        doCreateSierpinski(top, topLeft, topRight, vertices, depth - 1);
+        doCreateSierpinski(topLeft, left, leftRight, vertices, depth - 1);
+        doCreateSierpinski(topRight, leftRight, right, vertices, depth - 1);
+    }
+}
+
+std::vector<Model::Vertex>
+  createSierpinski(const glm::vec2 &top, const glm::vec2 &left, const glm::vec2 &right, std::size_t depth)
+{
+    std::vector<Model::Vertex> vertices;
+    doCreateSierpinski(top, left, right, vertices, depth);
+
+    return vertices;
+}
+
+} // namespace
 
 FirstApp::FirstApp()
 {
@@ -28,6 +67,7 @@ FirstApp::~FirstApp()
 void FirstApp::loadModels()
 {
     std::vector<Model::Vertex> vertices{{{0.0f, -0.5f}}, {{0.5f, 0.5f}}, {{-0.5f, 0.5f}}};
+    // const auto sierpinski = createSierpinski({0.0f, -0.5f}, {0.5f, 0.5f}, {-0.5f, 0.5f}, 10);
     model_ = std::make_unique<Model>(device_, vertices);
 }
 
