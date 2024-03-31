@@ -11,6 +11,7 @@ add_library(${PROJECT_NAME})
 target_sources(${PROJECT_NAME}
     PRIVATE
     device.cpp
+    model.cpp
     pipeline.cpp
     swap_chain.cpp
     window.cpp

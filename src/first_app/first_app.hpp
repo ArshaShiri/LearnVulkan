@@ -1,8 +1,10 @@
 #ifndef SRC_FIRST_APP_FIRST_APP
 #define SRC_FIRST_APP_FIRST_APP
 
-#include <device.hpp>
 #include <memory>
+
+#include <device.hpp>
+#include <model.hpp>
 #include <pipeline.hpp>
 #include <swap_chain.hpp>
 #include <window.hpp>
@@ -22,6 +24,7 @@ class FirstApp
     ~FirstApp();
 
   private:
+    void loadModels();
     void createPipelineLayout();
     void createPipeline();
     void createCommandBuffers();
@@ -34,6 +37,7 @@ class FirstApp
     std::unique_ptr<Pipeline> pipeline_{};
     VkPipelineLayout pipelineLayout_{};
     std::vector<VkCommandBuffer> commandBuffers_{};
+    std::unique_ptr<Model> model_;
 };
 
 #endif /* SRC_FIRST_APP_FIRST_APP */

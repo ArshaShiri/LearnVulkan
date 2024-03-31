@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 
-#include <device.hpp>
+#include "device.hpp"
 
 struct PipelineConfigInfo
 {
