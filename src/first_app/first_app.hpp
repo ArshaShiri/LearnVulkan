@@ -28,12 +28,14 @@ class FirstApp
     void createPipelineLayout();
     void createPipeline();
     void createCommandBuffers();
+    void freeCommandBuffers();
     void drawFrame();
+    void recreateSwapChain();
+    void recordCommandBuffer(int imageIndex);
 
     Window window_{WIDTH, HEIGHT, "Hello Vulkan!"};
     Device device_{window_};
-    SwapChain swapChain_{device_, window_.getExtent()};
-    PipelineConfigInfo pipelineConfig_{};
+    std::unique_ptr<SwapChain> swapChain_{};
     std::unique_ptr<Pipeline> pipeline_{};
     VkPipelineLayout pipelineLayout_{};
     std::vector<VkCommandBuffer> commandBuffers_{};

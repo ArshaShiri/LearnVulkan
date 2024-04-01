@@ -35,7 +35,7 @@ void Window::initWindow()
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 
     // TODO The window resizing is going to be supported by another way than glfw
-    glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+    glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
     GLFWwindow *window = glfwCreateWindow(width_, height_, windowName_.c_str(), NULL, NULL);
 
@@ -46,4 +46,14 @@ void Window::initWindow()
     }
 
     window_ = std::unique_ptr<GLFWwindow, decltype(&glfwDestroyWindow)>(window, glfwDestroyWindow);
+    glfwSetWindowUserPointer(window_.get(), this);
+    glfwSetFramebufferSizeCallback(window_.get(), frameBufferResizeCallback);
+}
+
+void Window::frameBufferResizeCallback(GLFWwindow *window, int width, int height)
+{
+    auto lveWindow = reinterpret_cast<Window *>(glfwGetWindowUserPointer(window));
+    lveWindow->frameBufferResized_ = true;
+    lveWindow->width_ = width;
+    lveWindow->height_ = height;
 }

@@ -22,13 +22,26 @@ class Window
         return {static_cast<uint32_t>(width_), static_cast<uint32_t>(height_)};
     }
 
+    bool wasWindowResized()
+    {
+        return frameBufferResized_;
+    }
+
+    void resetWindowResizedFlag()
+    {
+        frameBufferResized_ = false;
+    }
+
     ~Window();
 
   private:
+    static void frameBufferResizeCallback(GLFWwindow *window, int width, int height);
     void initWindow();
 
-    const int width_;
-    const int height_;
+    int width_;
+    int height_;
+    bool frameBufferResized_ = false;
+
     std::string windowName_;
     std::unique_ptr<GLFWwindow, decltype(&glfwDestroyWindow)> window_;
 };
