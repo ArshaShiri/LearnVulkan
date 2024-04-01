@@ -7,6 +7,7 @@
 
 namespace
 {
+//! Exercise of video 6
 void doCreateSierpinski(const glm::vec2 &top,
                         const glm::vec2 &left,
                         const glm::vec2 &right,
@@ -31,6 +32,7 @@ void doCreateSierpinski(const glm::vec2 &top,
     }
 }
 
+//! Exercise of video 6
 std::vector<Model::Vertex>
   createSierpinski(const glm::vec2 &top, const glm::vec2 &left, const glm::vec2 &right, std::size_t depth)
 {
@@ -66,8 +68,8 @@ FirstApp::~FirstApp()
 
 void FirstApp::loadModels()
 {
-    std::vector<Model::Vertex> vertices{{{0.0f, -0.5f}}, {{0.5f, 0.5f}}, {{-0.5f, 0.5f}}};
-    // const auto sierpinski = createSierpinski({0.0f, -0.5f}, {0.5f, 0.5f}, {-0.5f, 0.5f}, 10);
+    std::vector<Model::Vertex> vertices{
+      {{0.0f, -0.5f}, {1.0f, 0.0f, 0.0f}}, {{0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}}, {{-0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}}};
     model_ = std::make_unique<Model>(device_, vertices);
 }
 
