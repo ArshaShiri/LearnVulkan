@@ -17,6 +17,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE common)
 
 add_custom_command(TARGET ${PROJECT_NAME}
     PRE_BUILD
+    COMMAND sh ${CMAKE_CURRENT_SOURCE_DIR}/../shaders/compile.sh
     COMMAND cp ${CMAKE_CURRENT_SOURCE_DIR}/../shaders/simple_shaders/simple_shader.frag.spv .
     COMMAND cp ${CMAKE_CURRENT_SOURCE_DIR}/../shaders/simple_shaders/simple_shader.vert.spv .
 )
