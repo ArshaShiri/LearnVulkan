@@ -4,7 +4,7 @@
 #include <memory>
 
 #include <device.hpp>
-#include <model.hpp>
+#include <game_object.hpp>
 #include <pipeline.hpp>
 #include <swap_chain.hpp>
 #include <window.hpp>
@@ -24,7 +24,7 @@ class FirstApp
     ~FirstApp();
 
   private:
-    void loadModels();
+    void loadGameObjects();
     void createPipelineLayout();
     void createPipeline();
     void createCommandBuffers();
@@ -32,6 +32,7 @@ class FirstApp
     void drawFrame();
     void recreateSwapChain();
     void recordCommandBuffer(int imageIndex);
+    void renderGameObjects(VkCommandBuffer commandBuffer);
 
     Window window_{WIDTH, HEIGHT, "Hello Vulkan!"};
     Device device_{window_};
@@ -39,7 +40,7 @@ class FirstApp
     std::unique_ptr<Pipeline> pipeline_{};
     VkPipelineLayout pipelineLayout_{};
     std::vector<VkCommandBuffer> commandBuffers_{};
-    std::unique_ptr<Model> model_;
+    std::vector<GameObject> gameObjects_;
 };
 
 #endif /* SRC_FIRST_APP_FIRST_APP */
