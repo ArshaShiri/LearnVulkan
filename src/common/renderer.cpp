@@ -62,7 +62,7 @@ void Renderer::endFrame()
     }
 
     isFrameStarted_ = false;
-    currentImageIndex_ = (currentImageIndex_ + 1) % SwapChain::MAX_FRAMES_IN_FLIGHT;
+    currentFrameIndex_ = (currentFrameIndex_ + 1) % SwapChain::MAX_FRAMES_IN_FLIGHT;
 }
 
 void Renderer::beginSwapChainRenderPass(VkCommandBuffer commandBuffer)
@@ -131,18 +131,19 @@ void Renderer::recreateSwapChain()
     }
     else
     {
-        swapChain_ = std::make_unique<SwapChain>(device_, extent, std::move(swapChain_));
-        if (swapChain_->imageCount() != commandBuffers_.size())
+        std::shared_ptr<SwapChain> oldSwapChain = std::move(swapChain_);
+        swapChain_ = std::make_unique<SwapChain>(device_, extent, oldSwapChain);
+
+        if (!oldSwapChain->compareSwapFormats(*swapChain_.get()))
         {
-            freeCommandBuffers();
-            createCommandBuffers();
+            throw std::runtime_error("Swap chain image(or depth) format has changed!");
         }
     }
 }
 
 void Renderer::createCommandBuffers()
 {
-    commandBuffers_.resize(swapChain_->imageCount());
+    commandBuffers_.resize(SwapChain::MAX_FRAMES_IN_FLIGHT);
 
     VkCommandBufferAllocateInfo allocInfo{};
     allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;

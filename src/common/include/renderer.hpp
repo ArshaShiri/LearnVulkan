@@ -28,7 +28,13 @@ class Renderer
     VkCommandBuffer getCurrentCommandBuffer() const
     {
         assert(isFrameStarted_ && "Cannot get command buffer when frame not in progress");
-        return commandBuffers_[currentImageIndex_];
+        return commandBuffers_[currentFrameIndex_];
+    }
+
+    int getFrameIndex() const
+    {
+        assert(isFrameStarted_ && "Cannot get frame index when frame not in progress");
+        return currentFrameIndex_;
     }
 
     VkCommandBuffer beginFrame();
@@ -48,6 +54,7 @@ class Renderer
     std::unique_ptr<SwapChain> swapChain_{};
     std::vector<VkCommandBuffer> commandBuffers_{};
     uint32_t currentImageIndex_;
+    int currentFrameIndex_{0};
     bool isFrameStarted_{false};
 };
 
