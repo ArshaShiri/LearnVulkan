@@ -6,7 +6,7 @@
 #include <device.hpp>
 #include <game_object.hpp>
 #include <pipeline.hpp>
-#include <swap_chain.hpp>
+#include <renderer.hpp>
 #include <window.hpp>
 
 class FirstApp
@@ -27,19 +27,14 @@ class FirstApp
     void loadGameObjects();
     void createPipelineLayout();
     void createPipeline();
-    void createCommandBuffers();
-    void freeCommandBuffers();
-    void drawFrame();
-    void recreateSwapChain();
-    void recordCommandBuffer(int imageIndex);
     void renderGameObjects(VkCommandBuffer commandBuffer);
 
     Window window_{WIDTH, HEIGHT, "Hello Vulkan!"};
     Device device_{window_};
-    std::unique_ptr<SwapChain> swapChain_{};
+    Renderer renderer_{window_, device_};
+
     std::unique_ptr<Pipeline> pipeline_{};
     VkPipelineLayout pipelineLayout_{};
-    std::vector<VkCommandBuffer> commandBuffers_{};
     std::vector<GameObject> gameObjects_;
 };
 

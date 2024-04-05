@@ -13,6 +13,7 @@ target_sources(${PROJECT_NAME}
     device.cpp
     model.cpp
     pipeline.cpp
+    renderer.cpp
     swap_chain.cpp
     window.cpp
 )
