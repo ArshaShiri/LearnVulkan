@@ -14,6 +14,7 @@ target_sources(${PROJECT_NAME}
     model.cpp
     pipeline.cpp
     renderer.cpp
+    simple_render_system.cpp
     swap_chain.cpp
     window.cpp
 )

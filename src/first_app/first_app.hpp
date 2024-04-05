@@ -5,7 +5,6 @@
 
 #include <device.hpp>
 #include <game_object.hpp>
-#include <pipeline.hpp>
 #include <renderer.hpp>
 #include <window.hpp>
 
@@ -21,20 +20,12 @@ class FirstApp
 
     void run();
 
-    ~FirstApp();
-
   private:
     void loadGameObjects();
-    void createPipelineLayout();
-    void createPipeline();
-    void renderGameObjects(VkCommandBuffer commandBuffer);
 
     Window window_{WIDTH, HEIGHT, "Hello Vulkan!"};
     Device device_{window_};
     Renderer renderer_{window_, device_};
-
-    std::unique_ptr<Pipeline> pipeline_{};
-    VkPipelineLayout pipelineLayout_{};
     std::vector<GameObject> gameObjects_;
 };
 

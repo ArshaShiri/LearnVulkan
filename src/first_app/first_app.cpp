@@ -8,6 +8,7 @@
 #include <glm/gtc/constants.hpp>
 
 #include "first_app.hpp"
+#include "simple_render_system.hpp"
 
 namespace
 {
@@ -45,25 +46,17 @@ std::vector<Model::Vertex>
 
     return vertices;
 }
-
-struct SimplePushConstantData
-{
-    glm::mat2 transform{1.f};
-    alignas(8) glm::vec2 offset;
-    alignas(16) glm::vec3 color;
-};
-
 } // namespace
 
 FirstApp::FirstApp()
 {
     loadGameObjects();
-    createPipelineLayout();
-    createPipeline();
 }
 
 void FirstApp::run()
 {
+    SimpleRenderSystem simpleRenderSystem{device_, renderer_.getSwapChainRenderPass()};
+
     while (!window_.shouldClose())
     {
         glfwPollEvents();
@@ -71,16 +64,11 @@ void FirstApp::run()
         if (auto commandBuffer = renderer_.beginFrame())
         {
             renderer_.beginSwapChainRenderPass(commandBuffer);
-            renderGameObjects(commandBuffer);
+            simpleRenderSystem.renderGameObjects(commandBuffer, gameObjects_);
             renderer_.endSwapChainRenderPass(commandBuffer);
             renderer_.endFrame();
         }
     }
-}
-
-FirstApp::~FirstApp()
-{
-    vkDestroyPipelineLayout(device_.device(), pipelineLayout_, nullptr);
 }
 
 void FirstApp::loadGameObjects()
@@ -97,63 +85,4 @@ void FirstApp::loadGameObjects()
     triangle.transform2d.rotation = .25f * glm::two_pi<float>();
 
     gameObjects_.push_back(std::move(triangle));
-}
-
-void FirstApp::createPipelineLayout()
-{
-    VkPushConstantRange pushConstantRange{};
-
-    // We want to have access to push constant data both in vertex and fragment shaders.
-    pushConstantRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
-    pushConstantRange.offset = 0;
-    pushConstantRange.size = sizeof(SimplePushConstantData);
-
-    VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
-
-    pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-    pipelineLayoutInfo.setLayoutCount = 0;
-    pipelineLayoutInfo.pSetLayouts = nullptr;
-    pipelineLayoutInfo.pushConstantRangeCount = 1;
-    pipelineLayoutInfo.pPushConstantRanges = &pushConstantRange;
-
-    if (vkCreatePipelineLayout(device_.device(), &pipelineLayoutInfo, nullptr, &pipelineLayout_) != VK_SUCCESS)
-    {
-        throw std::runtime_error("failed to create pipeline layout!");
-    }
-}
-
-void FirstApp::createPipeline()
-{
-    assert(pipelineLayout_ != nullptr && "Cannot create pipeline before pipeline layout");
-
-    PipelineConfigInfo pipelineConfig{};
-    Pipeline::defaultPipelineConfigInfo(pipelineConfig);
-    pipelineConfig.renderPass = renderer_.getSwapChainRenderPass();
-    pipelineConfig.pipelineLayout = pipelineLayout_;
-    pipeline_ = std::make_unique<Pipeline>(device_, "simple_shader.vert.spv", "simple_shader.frag.spv", pipelineConfig);
-}
-
-void FirstApp::renderGameObjects(VkCommandBuffer commandBuffer)
-{
-    pipeline_->bind(commandBuffer);
-
-    for (auto &obj : gameObjects_)
-    {
-        obj.transform2d.rotation = glm::mod(obj.transform2d.rotation + 0.01f, glm::two_pi<float>());
-
-        SimplePushConstantData push{};
-        push.offset = obj.transform2d.translation;
-        push.color = obj.color;
-        push.transform = obj.transform2d.mat2();
-
-        vkCmdPushConstants(commandBuffer,
-                           pipelineLayout_,
-                           VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
-                           0,
-                           sizeof(SimplePushConstantData),
-                           &push);
-
-        obj.model->bind(commandBuffer);
-        obj.model->draw(commandBuffer);
-    }
 }
