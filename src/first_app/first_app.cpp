@@ -12,39 +12,100 @@
 
 namespace
 {
-//! Exercise of video 6
-void doCreateSierpinski(const glm::vec2 &top,
-                        const glm::vec2 &left,
-                        const glm::vec2 &right,
-                        std::vector<Model::Vertex> &vertices,
-                        std::size_t depth)
+// //! Exercise of video 6
+// void doCreateSierpinski(const glm::vec2 &top,
+//                         const glm::vec2 &left,
+//                         const glm::vec2 &right,
+//                         std::vector<Model::Vertex> &vertices,
+//                         std::size_t depth)
+// {
+//     if (depth <= 0)
+//     {
+//         vertices.push_back({top});
+//         vertices.push_back({left});
+//         vertices.push_back({right});
+//     }
+//     else
+//     {
+//         const auto topLeft = 0.5f * (left + top);
+//         const auto topRight = 0.5f * (right + top);
+//         const auto leftRight = 0.5f * (left + right);
+
+//         doCreateSierpinski(top, topLeft, topRight, vertices, depth - 1);
+//         doCreateSierpinski(topLeft, left, leftRight, vertices, depth - 1);
+//         doCreateSierpinski(topRight, leftRight, right, vertices, depth - 1);
+//     }
+// }
+
+// //! Exercise of video 6
+// std::vector<Model::Vertex>
+//   createSierpinski(const glm::vec2 &top, const glm::vec2 &left, const glm::vec2 &right, std::size_t depth)
+// {
+//     std::vector<Model::Vertex> vertices;
+//     doCreateSierpinski(top, left, right, vertices, depth);
+
+//     return vertices;
+// }
+
+// temporary helper function, creates a 1x1x1 cube centered at offset
+std::unique_ptr<Model> createCubeModel(Device &device, glm::vec3 offset)
 {
-    if (depth <= 0)
+    std::vector<Model::Vertex> vertices{
+
+      // left face (white)
+      {{-.5f, -.5f, -.5f}, {.9f, .9f, .9f}},
+      {{-.5f, .5f, .5f}, {.9f, .9f, .9f}},
+      {{-.5f, -.5f, .5f}, {.9f, .9f, .9f}},
+      {{-.5f, -.5f, -.5f}, {.9f, .9f, .9f}},
+      {{-.5f, .5f, -.5f}, {.9f, .9f, .9f}},
+      {{-.5f, .5f, .5f}, {.9f, .9f, .9f}},
+
+      // right face (yellow)
+      {{.5f, -.5f, -.5f}, {.8f, .8f, .1f}},
+      {{.5f, .5f, .5f}, {.8f, .8f, .1f}},
+      {{.5f, -.5f, .5f}, {.8f, .8f, .1f}},
+      {{.5f, -.5f, -.5f}, {.8f, .8f, .1f}},
+      {{.5f, .5f, -.5f}, {.8f, .8f, .1f}},
+      {{.5f, .5f, .5f}, {.8f, .8f, .1f}},
+
+      // top face (orange, remember y axis points down)
+      {{-.5f, -.5f, -.5f}, {.9f, .6f, .1f}},
+      {{.5f, -.5f, .5f}, {.9f, .6f, .1f}},
+      {{-.5f, -.5f, .5f}, {.9f, .6f, .1f}},
+      {{-.5f, -.5f, -.5f}, {.9f, .6f, .1f}},
+      {{.5f, -.5f, -.5f}, {.9f, .6f, .1f}},
+      {{.5f, -.5f, .5f}, {.9f, .6f, .1f}},
+
+      // bottom face (red)
+      {{-.5f, .5f, -.5f}, {.8f, .1f, .1f}},
+      {{.5f, .5f, .5f}, {.8f, .1f, .1f}},
+      {{-.5f, .5f, .5f}, {.8f, .1f, .1f}},
+      {{-.5f, .5f, -.5f}, {.8f, .1f, .1f}},
+      {{.5f, .5f, -.5f}, {.8f, .1f, .1f}},
+      {{.5f, .5f, .5f}, {.8f, .1f, .1f}},
+
+      // nose face (blue)
+      {{-.5f, -.5f, 0.5f}, {.1f, .1f, .8f}},
+      {{.5f, .5f, 0.5f}, {.1f, .1f, .8f}},
+      {{-.5f, .5f, 0.5f}, {.1f, .1f, .8f}},
+      {{-.5f, -.5f, 0.5f}, {.1f, .1f, .8f}},
+      {{.5f, -.5f, 0.5f}, {.1f, .1f, .8f}},
+      {{.5f, .5f, 0.5f}, {.1f, .1f, .8f}},
+
+      // tail face (green)
+      {{-.5f, -.5f, -0.5f}, {.1f, .8f, .1f}},
+      {{.5f, .5f, -0.5f}, {.1f, .8f, .1f}},
+      {{-.5f, .5f, -0.5f}, {.1f, .8f, .1f}},
+      {{-.5f, -.5f, -0.5f}, {.1f, .8f, .1f}},
+      {{.5f, -.5f, -0.5f}, {.1f, .8f, .1f}},
+      {{.5f, .5f, -0.5f}, {.1f, .8f, .1f}},
+
+    };
+    for (auto &v : vertices)
     {
-        vertices.push_back({top});
-        vertices.push_back({left});
-        vertices.push_back({right});
+        v.position += offset;
     }
-    else
-    {
-        const auto topLeft = 0.5f * (left + top);
-        const auto topRight = 0.5f * (right + top);
-        const auto leftRight = 0.5f * (left + right);
-
-        doCreateSierpinski(top, topLeft, topRight, vertices, depth - 1);
-        doCreateSierpinski(topLeft, left, leftRight, vertices, depth - 1);
-        doCreateSierpinski(topRight, leftRight, right, vertices, depth - 1);
-    }
-}
-
-//! Exercise of video 6
-std::vector<Model::Vertex>
-  createSierpinski(const glm::vec2 &top, const glm::vec2 &left, const glm::vec2 &right, std::size_t depth)
-{
-    std::vector<Model::Vertex> vertices;
-    doCreateSierpinski(top, left, right, vertices, depth);
-
-    return vertices;
+    return std::make_unique<Model>(device, vertices);
 }
 } // namespace
 
@@ -73,16 +134,10 @@ void FirstApp::run()
 
 void FirstApp::loadGameObjects()
 {
-    std::vector<Model::Vertex> vertices{
-      {{0.0f, -0.5f}, {1.0f, 0.0f, 0.0f}}, {{0.5f, 0.5f}, {0.0f, 1.0f, 0.0f}}, {{-0.5f, 0.5f}, {0.0f, 0.0f, 1.0f}}};
-    auto model = std::make_shared<Model>(device_, vertices);
-
-    auto triangle = GameObject::createGameObject();
-    triangle.model = model;
-    triangle.color = {.1f, .8f, .1f};
-    triangle.transform2d.translation.x = .2f;
-    triangle.transform2d.scale = {2.f, .5f};
-    triangle.transform2d.rotation = .25f * glm::two_pi<float>();
-
-    gameObjects_.push_back(std::move(triangle));
+    std::shared_ptr<Model> model_ = createCubeModel(device_, {.0f, .0f, .0f});
+    auto cube = GameObject::createGameObject();
+    cube.model = model_;
+    cube.transform.translation = {.0f, .0f, .5f};
+    cube.transform.scale = {.5f, .5f, .5f};
+    gameObjects_.push_back(std::move(cube));
 }
