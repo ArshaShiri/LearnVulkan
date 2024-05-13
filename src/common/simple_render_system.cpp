@@ -24,7 +24,9 @@ SimpleRenderSystem::SimpleRenderSystem(Device &device, VkRenderPass renderPass) 
     createPipeline(renderPass);
 }
 
-void SimpleRenderSystem::renderGameObjects(VkCommandBuffer commandBuffer, std::vector<GameObject> &gameObjects)
+void SimpleRenderSystem::renderGameObjects(VkCommandBuffer commandBuffer,
+                                           std::vector<GameObject> &gameObjects,
+                                           const Camera &camera)
 {
     pipeline_->bind(commandBuffer);
 
@@ -35,7 +37,7 @@ void SimpleRenderSystem::renderGameObjects(VkCommandBuffer commandBuffer, std::v
 
         SimplePushConstantData push{};
         push.color = obj.color;
-        push.transform = obj.transform.mat4();
+        push.transform = camera.getProjection() * obj.transform.mat4();
 
         vkCmdPushConstants(commandBuffer,
                            pipelineLayout_,

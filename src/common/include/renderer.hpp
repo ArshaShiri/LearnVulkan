@@ -20,6 +20,11 @@ class Renderer
         return swapChain_->getRenderPass();
     }
 
+    float getAspectRatio() const
+    {
+        return swapChain_->extentAspectRatio();
+    }
+
     bool isFrameInProgress() const
     {
         return isFrameStarted_;

@@ -10,6 +10,7 @@ add_library(${PROJECT_NAME})
 
 target_sources(${PROJECT_NAME}
     PRIVATE
+    camera.cpp
     device.cpp
     model.cpp
     pipeline.cpp
