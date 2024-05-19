@@ -32,6 +32,11 @@ class Window
         frameBufferResized_ = false;
     }
 
+    GLFWwindow *getGLFWwindow() const
+    {
+        return window_.get();
+    }
+
     ~Window();
 
   private:

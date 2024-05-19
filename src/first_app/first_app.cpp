@@ -1,4 +1,5 @@
 #include <array>
+#include <chrono>
 #include <stdexcept>
 
 // libs
@@ -9,6 +10,7 @@
 
 #include "camera.hpp"
 #include "first_app.hpp"
+#include "keyboard_movement_controller.hpp"
 #include "simple_render_system.hpp"
 
 namespace
@@ -85,12 +87,23 @@ void FirstApp::run()
     SimpleRenderSystem simpleRenderSystem{device_, renderer_.getSwapChainRenderPass()};
     Camera camera{};
 
-    // camera.setViewDirection(glm::vec3(0.f), glm::vec3(0.5f, 0.f, 1.f));
-    camera.setViewTarget(glm::vec3(-1.f, -2.f, -2.f), glm::vec3(0.f, 0.f, 2.5f));
+    auto viewerObject = GameObject::createGameObject();
+    KeyboardMovementController cameraController{};
+
+    auto currentTime = std::chrono::high_resolution_clock::now();
 
     while (!window_.shouldClose())
     {
         glfwPollEvents();
+
+        const auto newTime = std::chrono::high_resolution_clock::now();
+        const float frameTime =
+          std::chrono::duration<float, std::chrono::seconds::period>(newTime - currentTime).count();
+
+        cameraController.moveInPlaneXZ(window_.getGLFWwindow(), frameTime, viewerObject);
+        camera.setViewYXZ(viewerObject.transform.translation, viewerObject.transform.rotation);
+
+        currentTime = newTime;
 
         const auto aspect = renderer_.getAspectRatio();
         // camera.setOrthographicProjection(-aspect, aspect, -1, 1, -1, 1);
