@@ -9,6 +9,7 @@ class VulkanTutorial(ConanFile):
     def requirements(self):
         self.requires("glfw/3.3.8")
         self.requires("glm/cci.20230113")
+        self.requires("tinyobjloader/2.0.0-rc10")
 
     def layout(self):
         cmake_layout(self)

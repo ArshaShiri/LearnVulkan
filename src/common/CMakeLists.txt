@@ -28,4 +28,4 @@ target_include_directories(
     PUBLIC include
 )
 
-target_link_libraries(${PROJECT_NAME} PUBLIC glfw glm::glm Vulkan::Vulkan)
+target_link_libraries(${PROJECT_NAME} PUBLIC glfw glm::glm Vulkan::Vulkan tinyobjloader::tinyobjloader)

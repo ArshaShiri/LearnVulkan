@@ -20,4 +20,5 @@ add_custom_command(TARGET ${PROJECT_NAME}
     COMMAND sh ${CMAKE_CURRENT_SOURCE_DIR}/../shaders/compile.sh
     COMMAND cp ${CMAKE_CURRENT_SOURCE_DIR}/../shaders/simple_shaders/simple_shader.frag.spv .
     COMMAND cp ${CMAKE_CURRENT_SOURCE_DIR}/../shaders/simple_shaders/simple_shader.vert.spv .
+    COMMAND cp -r ${CMAKE_CURRENT_SOURCE_DIR}/../../models .
 )

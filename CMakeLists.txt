@@ -4,6 +4,7 @@ project(vulakn_tutorial CXX)
 find_package(Vulkan REQUIRED)
 find_package(glfw3 REQUIRED)
 find_package(glm REQUIRED)
+find_package(tinyobjloader)
 
 # This is going to be useful to link to the VS Code.
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
