@@ -10,6 +10,7 @@ add_library(${PROJECT_NAME})
 
 target_sources(${PROJECT_NAME}
     PRIVATE
+    buffer.cpp
     camera.cpp
     device.cpp
     game_object.cpp

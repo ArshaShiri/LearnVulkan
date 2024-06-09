@@ -8,6 +8,7 @@
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include <glm/glm.hpp>
 
+#include "buffer.hpp"
 #include "device.hpp"
 
 class Model
@@ -38,7 +39,6 @@ class Model
     };
 
     Model(Device &device, const Model::Builder &builder);
-    ~Model();
 
     Model(const Model &) = delete;
     Model &operator=(const Model &) = delete;
@@ -53,13 +53,11 @@ class Model
     void createIndexBuffers(const std::vector<uint32_t> &indices);
 
     Device &device_;
-    VkBuffer vertexBuffer_;
-    VkDeviceMemory vertexBufferMemory_;
+    std::unique_ptr<Buffer> vertexBuffer_;
     uint32_t vertexCount_;
 
     bool hasIndexBuffer_ = false;
-    VkBuffer indexBuffer_;
-    VkDeviceMemory indexBufferMemory_;
+    std::unique_ptr<Buffer> indexBuffer_;
     uint32_t indexCount_;
 };
 

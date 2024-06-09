@@ -8,15 +8,17 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/constants.hpp>
 
+#include "buffer.hpp"
 #include "camera.hpp"
 #include "first_app.hpp"
 #include "keyboard_movement_controller.hpp"
 #include "simple_render_system.hpp"
 
-namespace
+struct GlobalUbo
 {
-
-} // namespace
+    glm::mat4 projectionView{1.f};
+    glm::vec3 lightDirection = glm::normalize(glm::vec3{1.f, -3.f, -1.f});
+};
 
 FirstApp::FirstApp()
 {
@@ -25,6 +27,14 @@ FirstApp::FirstApp()
 
 void FirstApp::run()
 {
+    std::vector<std::unique_ptr<Buffer>> uboBuffers(SwapChain::MAX_FRAMES_IN_FLIGHT);
+    for (int i = 0; i < uboBuffers.size(); i++)
+    {
+        uboBuffers[i] = std::make_unique<Buffer>(
+          device_, sizeof(GlobalUbo), 1, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT);
+        uboBuffers[i]->map();
+    }
+
     SimpleRenderSystem simpleRenderSystem{device_, renderer_.getSwapChainRenderPass()};
     Camera camera{};
 
@@ -52,8 +62,18 @@ void FirstApp::run()
 
         if (auto commandBuffer = renderer_.beginFrame())
         {
+            int frameIndex = renderer_.getFrameIndex();
+            FrameInfo frameInfo{frameIndex, frameTime, commandBuffer, camera};
+
+            // update
+            GlobalUbo ubo{};
+            ubo.projectionView = camera.getProjection() * camera.getView();
+            uboBuffers[frameIndex]->writeToBuffer(&ubo);
+            uboBuffers[frameIndex]->flush();
+
+            // render
             renderer_.beginSwapChainRenderPass(commandBuffer);
-            simpleRenderSystem.renderGameObjects(commandBuffer, gameObjects_, camera);
+            simpleRenderSystem.renderGameObjects(frameInfo, gameObjects_);
             renderer_.endSwapChainRenderPass(commandBuffer);
             renderer_.endFrame();
         }
