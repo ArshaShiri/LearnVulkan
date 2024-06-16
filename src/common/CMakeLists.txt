@@ -12,6 +12,7 @@ target_sources(${PROJECT_NAME}
     PRIVATE
     buffer.cpp
     camera.cpp
+    descriptors.cpp
     device.cpp
     game_object.cpp
     keyboard_movement_controller.cpp

@@ -22,6 +22,10 @@ struct GlobalUbo
 
 FirstApp::FirstApp()
 {
+    globalPool_ = DescriptorPool::Builder(device_)
+                    .setMaxSets(SwapChain::MAX_FRAMES_IN_FLIGHT)
+                    .addPoolSize(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, SwapChain::MAX_FRAMES_IN_FLIGHT)
+                    .build();
     loadGameObjects();
 }
 
@@ -35,7 +39,19 @@ void FirstApp::run()
         uboBuffers[i]->map();
     }
 
-    SimpleRenderSystem simpleRenderSystem{device_, renderer_.getSwapChainRenderPass()};
+    auto globalSetLayout = DescriptorSetLayout::Builder(device_)
+                             .addBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT)
+                             .build();
+
+    std::vector<VkDescriptorSet> globalDescriptorSets(SwapChain::MAX_FRAMES_IN_FLIGHT);
+    for (int i = 0; i < globalDescriptorSets.size(); i++)
+    {
+        auto bufferInfo = uboBuffers[i]->descriptorInfo();
+        DescriptorWriter(*globalSetLayout, *globalPool_).writeBuffer(0, &bufferInfo).build(globalDescriptorSets[i]);
+    }
+
+    SimpleRenderSystem simpleRenderSystem{
+      device_, renderer_.getSwapChainRenderPass(), globalSetLayout->getDescriptorSetLayout()};
     Camera camera{};
 
     auto viewerObject = GameObject::createGameObject();
@@ -63,7 +79,7 @@ void FirstApp::run()
         if (auto commandBuffer = renderer_.beginFrame())
         {
             int frameIndex = renderer_.getFrameIndex();
-            FrameInfo frameInfo{frameIndex, frameTime, commandBuffer, camera};
+            FrameInfo frameInfo{frameIndex, frameTime, commandBuffer, camera, globalDescriptorSets[frameIndex]};
 
             // update
             GlobalUbo ubo{};

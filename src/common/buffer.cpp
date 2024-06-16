@@ -62,10 +62,6 @@ Buffer::~Buffer()
 VkResult Buffer::map(VkDeviceSize size, VkDeviceSize offset)
 {
     assert(buffer_ && memory_ && "Called map on buffer before create");
-    if (size == VK_WHOLE_SIZE)
-    {
-        return vkMapMemory(device_.device(), memory_, 0, bufferSize_, 0, &mapped_);
-    }
     return vkMapMemory(device_.device(), memory_, offset, size, 0, &mapped_);
 }
 

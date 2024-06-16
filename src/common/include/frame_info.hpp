@@ -12,6 +12,7 @@ struct FrameInfo
     float frameTime;
     VkCommandBuffer commandBuffer;
     Camera &camera;
+    VkDescriptorSet globalDescriptorSet;
 };
 
 #endif /* SRC_COMMON_INCLUDE_FRAME_INFO */

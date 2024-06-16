@@ -3,6 +3,7 @@
 
 #include <memory>
 
+#include <descriptors.hpp>
 #include <device.hpp>
 #include <game_object.hpp>
 #include <renderer.hpp>
@@ -26,6 +27,8 @@ class FirstApp
     Window window_{WIDTH, HEIGHT, "Hello Vulkan!"};
     Device device_{window_};
     Renderer renderer_{window_, device_};
+    // note: order of declarations matters
+    std::unique_ptr<DescriptorPool> globalPool_{};
     std::vector<GameObject> gameObjects_;
 };
 

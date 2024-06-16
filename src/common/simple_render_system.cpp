@@ -13,14 +13,15 @@ namespace
 {
 struct SimplePushConstantData
 {
-    glm::mat4 transform{1.f};
+    glm::mat4 modelMatrix{1.f};
     glm::mat4 normalMatrix{1.f};
 };
 } // namespace
 
-SimpleRenderSystem::SimpleRenderSystem(Device &device, VkRenderPass renderPass) : device_{device}
+SimpleRenderSystem::SimpleRenderSystem(Device &device, VkRenderPass renderPass, VkDescriptorSetLayout globalSetLayout)
+  : device_{device}
 {
-    createPipelineLayout();
+    createPipelineLayout(globalSetLayout);
     createPipeline(renderPass);
 }
 
@@ -28,13 +29,19 @@ void SimpleRenderSystem::renderGameObjects(FrameInfo &frameInfo, std::vector<Gam
 {
     pipeline_->bind(frameInfo.commandBuffer);
 
-    const auto projectionView = frameInfo.camera.getProjection() * frameInfo.camera.getView();
+    vkCmdBindDescriptorSets(frameInfo.commandBuffer,
+                            VK_PIPELINE_BIND_POINT_GRAPHICS,
+                            pipelineLayout_,
+                            0,
+                            1,
+                            &frameInfo.globalDescriptorSet,
+                            0,
+                            nullptr);
 
     for (auto &obj : gameObjects)
     {
         SimplePushConstantData push{};
-        auto modelMatrix = obj.transform.mat4();
-        push.transform = projectionView * modelMatrix;
+        push.modelMatrix = obj.transform.mat4();
         push.normalMatrix = obj.transform.normalMatrix();
 
         vkCmdPushConstants(frameInfo.commandBuffer,
@@ -54,7 +61,7 @@ SimpleRenderSystem::~SimpleRenderSystem()
     vkDestroyPipelineLayout(device_.device(), pipelineLayout_, nullptr);
 }
 
-void SimpleRenderSystem::createPipelineLayout()
+void SimpleRenderSystem::createPipelineLayout(VkDescriptorSetLayout globalSetLayout)
 {
     VkPushConstantRange pushConstantRange{};
 
@@ -63,11 +70,13 @@ void SimpleRenderSystem::createPipelineLayout()
     pushConstantRange.offset = 0;
     pushConstantRange.size = sizeof(SimplePushConstantData);
 
+    std::vector<VkDescriptorSetLayout> descriptorSetLayouts{globalSetLayout};
+
     VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
 
     pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-    pipelineLayoutInfo.setLayoutCount = 0;
-    pipelineLayoutInfo.pSetLayouts = nullptr;
+    pipelineLayoutInfo.setLayoutCount = static_cast<uint32_t>(descriptorSetLayouts.size());
+    pipelineLayoutInfo.pSetLayouts = descriptorSetLayouts.data();
     pipelineLayoutInfo.pushConstantRangeCount = 1;
     pipelineLayoutInfo.pPushConstantRanges = &pushConstantRange;
 

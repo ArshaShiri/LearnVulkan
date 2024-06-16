@@ -13,7 +13,7 @@
 class SimpleRenderSystem
 {
   public:
-    SimpleRenderSystem(Device &device, VkRenderPass renderPass);
+    SimpleRenderSystem(Device &device, VkRenderPass renderPass, VkDescriptorSetLayout globalSetLayout);
     SimpleRenderSystem(const SimpleRenderSystem &) = delete;
     SimpleRenderSystem &operator=(const SimpleRenderSystem &) = delete;
 
@@ -22,7 +22,7 @@ class SimpleRenderSystem
     ~SimpleRenderSystem();
 
   private:
-    void createPipelineLayout();
+    void createPipelineLayout(VkDescriptorSetLayout globalSetLayout);
     void createPipeline(VkRenderPass renderPass);
 
     Device &device_;
