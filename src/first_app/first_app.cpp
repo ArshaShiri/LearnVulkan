@@ -42,7 +42,7 @@ void FirstApp::run()
     }
 
     auto globalSetLayout = DescriptorSetLayout::Builder(device_)
-                             .addBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_VERTEX_BIT)
+                             .addBinding(0, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_SHADER_STAGE_ALL_GRAPHICS)
                              .build();
 
     std::vector<VkDescriptorSet> globalDescriptorSets(SwapChain::MAX_FRAMES_IN_FLIGHT);
@@ -82,7 +82,8 @@ void FirstApp::run()
         if (auto commandBuffer = renderer_.beginFrame())
         {
             int frameIndex = renderer_.getFrameIndex();
-            FrameInfo frameInfo{frameIndex, frameTime, commandBuffer, camera, globalDescriptorSets[frameIndex]};
+            FrameInfo frameInfo{
+              frameIndex, frameTime, commandBuffer, camera, globalDescriptorSets[frameIndex], gameObjects_};
 
             // update
             GlobalUbo ubo{};
@@ -92,7 +93,7 @@ void FirstApp::run()
 
             // render
             renderer_.beginSwapChainRenderPass(commandBuffer);
-            simpleRenderSystem.renderGameObjects(frameInfo, gameObjects_);
+            simpleRenderSystem.renderGameObjects(frameInfo);
             renderer_.endSwapChainRenderPass(commandBuffer);
             renderer_.endFrame();
         }
@@ -106,19 +107,19 @@ void FirstApp::loadGameObjects()
     flatVase.model = model;
     flatVase.transform.translation = {-.5f, .5f, 0.0f};
     flatVase.transform.scale = {3.f, 1.5f, 3.f};
-    gameObjects_.push_back(std::move(flatVase));
+    gameObjects_.emplace(flatVase.getId(), std::move(flatVase));
 
     model = Model::createModelFromFile(device_, "models/smooth_vase.obj");
     auto smoothVase = GameObject::createGameObject();
     smoothVase.model = model;
     smoothVase.transform.translation = {.5f, .5f, 0.0f};
     smoothVase.transform.scale = {3.f, 1.5f, 3.f};
-    gameObjects_.push_back(std::move(smoothVase));
+    gameObjects_.emplace(smoothVase.getId(), std::move(smoothVase));
 
     model = Model::createModelFromFile(device_, "models/quad.obj");
     auto floor = GameObject::createGameObject();
     floor.model = model;
     floor.transform.translation = {0.f, .5f, 0.f};
     floor.transform.scale = {3.f, 1.f, 3.f};
-    gameObjects_.push_back(std::move(floor));
+    gameObjects_.emplace(floor.getId(), std::move(floor));
 }

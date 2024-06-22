@@ -29,7 +29,7 @@ class FirstApp
     Renderer renderer_{window_, device_};
     // note: order of declarations matters
     std::unique_ptr<DescriptorPool> globalPool_{};
-    std::vector<GameObject> gameObjects_;
+    GameObject::Map gameObjects_;
 };
 
 #endif /* SRC_FIRST_APP_FIRST_APP */
