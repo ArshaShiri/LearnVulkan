@@ -18,6 +18,7 @@ target_sources(${PROJECT_NAME}
     keyboard_movement_controller.cpp
     model.cpp
     pipeline.cpp
+    point_light_system.cpp
     renderer.cpp
     simple_render_system.cpp
     swap_chain.cpp
