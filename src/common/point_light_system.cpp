@@ -9,6 +9,7 @@
 // std
 #include <array>
 #include <cassert>
+#include <map>
 #include <stdexcept>
 
 struct PointLightPushConstants
@@ -81,6 +82,7 @@ void PointLightSystem::createPipeline(VkRenderPass renderPass)
 
     PipelineConfigInfo pipelineConfig{};
     Pipeline::defaultPipelineConfigInfo(pipelineConfig);
+    Pipeline::enableAlphaBlending(pipelineConfig);
     pipelineConfig.attributeDescriptions.clear();
     pipelineConfig.bindingDescriptions.clear();
     pipelineConfig.renderPass = renderPass;
@@ -90,6 +92,20 @@ void PointLightSystem::createPipeline(VkRenderPass renderPass)
 
 void PointLightSystem::render(FrameInfo &frameInfo)
 {
+    // sort lights
+    std::map<float, GameObject::id_t> sorted;
+    for (auto &kv : frameInfo.gameObjects)
+    {
+        auto &obj = kv.second;
+        if (obj.pointLight == nullptr)
+            continue;
+
+        // calculate distance
+        auto offset = frameInfo.camera.getPosition() - obj.transform.translation;
+        float disSquared = glm::dot(offset, offset);
+        sorted[disSquared] = obj.getId();
+    }
+
     pipeline_->bind(frameInfo.commandBuffer);
 
     vkCmdBindDescriptorSets(frameInfo.commandBuffer,
@@ -101,11 +117,11 @@ void PointLightSystem::render(FrameInfo &frameInfo)
                             0,
                             nullptr);
 
-    for (auto &kv : frameInfo.gameObjects)
+    // iterate through sorted lights in reverse order
+    for (auto it = sorted.rbegin(); it != sorted.rend(); ++it)
     {
-        auto &obj = kv.second;
-        if (obj.pointLight == nullptr)
-            continue;
+        // use game obj id to find light object
+        auto &obj = frameInfo.gameObjects.at(it->second);
 
         PointLightPushConstants push{};
         push.position = glm::vec4(obj.transform.translation, 1.f);

@@ -40,6 +40,7 @@ class Pipeline
     Pipeline &operator=(const Pipeline &) = delete;
 
     static void defaultPipelineConfigInfo(PipelineConfigInfo &configInfo);
+    static void enableAlphaBlending(PipelineConfigInfo &configInfo);
 
     void bind(VkCommandBuffer commandBuffer);
 
